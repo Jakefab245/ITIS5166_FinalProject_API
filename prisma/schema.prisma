@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Order {
+  id Int @id @default(autoincrement())
+  title String
+  content String
+  createdAt DateTime @default(now()) @map("created_at")
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId Int @map("user_id")
+  @@map("orders")
+}
+
+model User {
+ id Int @id @default(autoincrement())
+ email String @unique
+ password String
+ role Role @default(USER)
+ orders Order[] 
+ reviews Review[]
+ @@map("users")
+}
+
+model Review {
+  id Int @id @default(autoincrement())
+  rating Int
+  comment String
+  createdAt DateTime @default(now()) @map("created_at")
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId Int @map("user_id")
+  @@map("reviews")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
