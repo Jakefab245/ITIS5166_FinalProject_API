@@ -37,7 +37,19 @@ model Review {
   @@map("reviews")
 }
 
+model Menu{ 
+  id Int @id @default(autoincrement()) 
+  name String 
+  description String 
+  price Float 
+  @@map("menu")
+}
+
 enum Role {
   USER
   ADMIN
-}
+} 
+ 
+// Key Distinctions for Roles are provided below  
+// 1. Admin: Make changes to Menu Items (Key Distinction solely for Administrators), Make Changes to Coffee Orders
+// 2. User: Create Reviews, Orders, Sign-Up as well. 
