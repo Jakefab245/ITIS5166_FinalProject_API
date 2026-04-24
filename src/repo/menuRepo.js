@@ -12,4 +12,25 @@ export async function getMenuItemById(id){
 export function createMenuItem(data){ 
     const menItem = prisma.menuItem.create({data}); 
     return menItem;
+} 
+
+export async function updateMenuItem(id, updatedData){ 
+    try { 
+        const updatedItem = await prisma.menuItem.update({ where: { id }, updatedData });
+        return updatedItem;
+    }  
+    catch (error){ 
+        if (error.code === 'P2025') return null; 
+        throw error;
+    }
+}
+
+export async function removeMenuItem(id){ 
+    try{ 
+        const deletedItem = await prisma.menuItem.delete({where: {id}}); 
+        return deletedItem;
+    } catch (error) { 
+        if (error.code === 'P2025') return null; 
+        throw error;
+    }
 }
