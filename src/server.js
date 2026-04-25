@@ -3,7 +3,10 @@ import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express'; 
 import yaml from 'js-yaml'; 
 import fs from 'fs';
-import postRoutes from './routes/postRoutes.js';
+import menuRoutes from './routes/menuRoutes/.js'; 
+import orderRoutes from './routes/orderRoutes.js'; 
+import reviewRoutes from './routes/reviewRoutes.js'; 
+import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 
 const app = express();
