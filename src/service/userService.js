@@ -50,7 +50,7 @@ export async function modifyUser(id, updatedData){
         error.status=404 
         throw error;
     }
-}
+} 
 
 export async function removeUserById(id){ 
     const deletedUser = await removeUser(id); 

@@ -16,10 +16,41 @@ export async function getUserByEmail(email){
 } 
 
 export function createUser(data){ 
-    const user = prisma.User.create({data}); 
-    return user;
-} 
+    try{ 
+        const user = prisma.User.create({data}); 
+        return user;
+    } 
+    catch(error){ 
+        if(error.code === 'P2002'){ 
+            const err = new Error(`User with email ${data.email} already exists`); 
+            err.status = 409; 
+            throw error;
+        }  
+        throw error;
+    } 
+}
+export async function updateUserRoleById(id, newRole){ 
+    try{ 
+        if(user.role === "ADMIN"){ 
+            const updatedUser = await prisma.user.update({where: {id}, data: {role: newRole}, omit:{password: true}}); 
+            return updatedUser;  
+        }
+    } catch (error) {
+        if(error.code === 404) {
+            const err = new Error(`User with ${id} does not exist`); 
+            err.status=404; 
+            throw err; 
+        }
+        if(error.code === 'P2023'){ 
+            const err = new Error(`User with ${id} is not authorized`); 
+            err.status= 403; 
+            throw err;
 
+        }
+        throw error;
+
+    }
+}
 export async function updateUser(id, updatedData){ 
     try{ 
         const updatedUser = await prisma.User.update({where: {id}, data: updatedData}); 
