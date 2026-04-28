@@ -4,11 +4,11 @@ import {authorizeRoles} from '../middleware/authorizeRoles.js';
 
 const router = express.Router(); 
 
-router.get('/', authorizeRoles('admin', 'user') ,getMenuItemsHandler); 
+router.get('/', authorizeRoles('ADMIN', 'USER') ,getMenuItemsHandler); 
 router.get('/:id', getMenuItemByIdHandler);
-router.post('/', authorizeRoles('admin') ,createMenuItemHandler); 
-router.put('/:id',authorizeRoles('admin') ,updateMenuItemHandler); 
-router.delete('/:id',authorizeRoles('admin') ,removeMenuItemHandler); 
+router.post('/', authorizeRoles('ADMIN') ,createMenuItemHandler); 
+router.put('/:id',authorizeRoles('ADMIN') ,updateMenuItemHandler); 
+router.delete('/:id',authorizeRoles('ADMIN') ,removeMenuItemHandler); 
 
 
 export default router;

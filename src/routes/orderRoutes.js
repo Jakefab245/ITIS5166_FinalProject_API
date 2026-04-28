@@ -4,7 +4,7 @@ import {authorizeRoles} from '../middleware/authorizeRoles.js';
 
 const router = express.Router(); 
 
-router.get('/', getOrdersHandler, authorizeRoles('admin')); 
+router.get('/', authorizeRoles('ADMIN'), getOrdersHandler); 
 router.get('/:id', getOrderByIdHandler);
 router.post('/', createOrderHandler); 
 router.put('/:id', updateOrderHandler); 
