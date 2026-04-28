@@ -23,7 +23,10 @@ try {
   process.exit(1);
 }
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
-app.use('/api/posts', postRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/menu', menuRoutes); 
+app.use('/api/orders', orderRoutes); 
+app.use('/api/reviews', reviewRoutes);
 app.use('/api/auth', authRoutes);
 
 app.use((req, res, next) => {
