@@ -3,14 +3,14 @@ import { getAllUsersHandler, getUserByIdHandler, createUserHandler, updateUserRo
 
 
 import express from 'express'; 
-const app = express.Router(); 
+const router = express.Router(); 
 
 
 
-app.get('/',getAllUsersHandler); 
-app.get('/:id',getUserByIdHandler);
-app.post('/',createUserHandler);
-app.put('/:id',updateUserHandler);
-app.delete('/:id',deleteUserHandler); 
+router.get('/',getAllUsersHandler); 
+router.get('/:id',getUserByIdHandler);
+router.post('/',createUserHandler);
+router.put('/:id',updateUserHandler);
+router.delete('/:id',deleteUserHandler); 
 
-export default app;
+export default router;
