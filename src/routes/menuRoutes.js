@@ -9,3 +9,6 @@ router.get('/:id', getMenuItemByIdHandler);
 router.post('/', createMenuItemHandler, authorizeRoles('admin')); 
 router.put('/:id', updateMenuItemHandler, authorizeRoles('admin')); 
 router.delete('/:id', removeMenuItemHandler, authorizeRoles('admin')); 
+
+
+export default router;

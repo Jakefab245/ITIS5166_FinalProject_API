@@ -5,4 +5,7 @@ import { validateSignUp } from '../middleware/userValidators.js';
 const router = express.Router(); 
 
 router.post('/signup', validateSignUp ,signUpController); 
-router.post('/login', logInController);
+router.post('/login', logInController); 
+
+
+export default router;
