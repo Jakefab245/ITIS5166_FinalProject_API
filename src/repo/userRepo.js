@@ -5,7 +5,7 @@ export async function getAllUsers(){
 }
 
 export async function getUserById(id){ 
-    const user = await prisma.User.findUnque({where:{id}}); 
+    const user = await prisma.User.findUnique({where:{id}}); 
     return user;
 }
 
@@ -31,7 +31,7 @@ export function createUser(data){
 }
 export async function updateUserRoleById(id, newRole){ 
     try{ 
-        if(user.role === "ADMIN"){ 
+        if(prisma.user.role === "ADMIN"){ 
             const updatedUser = await prisma.user.update({where: {id}, data: {role: newRole}, omit:{password: true}}); 
             return updatedUser;  
         }

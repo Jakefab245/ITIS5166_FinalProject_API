@@ -22,7 +22,7 @@ export async function updateReviewHandler(req, res){
     res.status(200).json(updatedReview);
 } 
 
-export async function removeReivewHandler(req, res){ 
+export async function removeReviewHandler(req, res){ 
     const id = parseInt(req.params.id); 
     await removeReviewById(id); 
     res.status(204).send();
