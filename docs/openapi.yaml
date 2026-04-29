@@ -15,7 +15,7 @@ info:
 servers:
   - url: http://localhost:3000/api
     description: Local development
-  - url: Env{RENDER_URL}
+  - url: https://itis5166-finalproject-api.onrender.com
     description: Render production 
 
 # Default: every operation requires JWT.
