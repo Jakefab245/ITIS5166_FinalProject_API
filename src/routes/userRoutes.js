@@ -1,8 +1,7 @@
-import { getAllUsersHandler, getUserByIdHandler, createUserHandler, updateUserRoleHandler, updateUserHandler, deleteUserHandler} from '../controllers/userController.js'; 
-
-
-
+import { getAllUsersHandler, getUserByIdHandler, createUserHandler, updateUserHandler, deleteUserHandler} from '../controller/userController.js'; 
 import express from 'express'; 
+
+
 const router = express.Router(); 
 
 

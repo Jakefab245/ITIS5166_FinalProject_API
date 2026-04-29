@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'; 
-import {createUser, findUserByEmail} from '../repositories/userRepo.js';
+import {createUser, getUserByEmail} from '../repo/userRepo.js';
 
 
 export async function signUp(email, password,role){ 

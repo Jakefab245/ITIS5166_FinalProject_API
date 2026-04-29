@@ -1,4 +1,4 @@
-import {getMenuItemsHandler, getMenuItemByIdHandler,createMenuItemHandler, removeMenuItemHandler, updateMenuItemHandler } from '../controllers/menuController.js'; 
+import {getMenuItemsHandler, getMenuItemByIdHandler,createMenuItemHandler, removeMenuItemHandler, updateMenuItemHandler } from '../controller/menuController.js'; 
 import express from 'express'; 
 import {authorizeRoles} from '../middleware/authorizeRoles.js';
 

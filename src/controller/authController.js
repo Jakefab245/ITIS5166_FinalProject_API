@@ -1,4 +1,4 @@
-import {signUp, logIn} from '../services/authService.js'; 
+import {signUp, logIn} from '../service/authService.js'; 
 
 export async function signUpController(req, res){ 
     const {email, password, role} = req.body; 

@@ -3,50 +3,51 @@ import 'dotenv/config';
 import prisma from '../src/config/db.js';
 
 try {
-  await prisma.$queryRaw`TRUNCATE posts, users RESTART IDENTITY CASCADE;`;
+  // Clear in dependency order
+  await prisma.$executeRawUnsafe(`TRUNCATE TABLE "reviews", "orders", "menu", "users" RESTART IDENTITY CASCADE;`);
 
   const usersData = [
-    { email: 'alice@test.com', password: 'alice1234' },
-    { email: 'bob@example.com', password: 'bob1234' },
-    { email: 'charlie@demo.com', password: 'charlie1234', role: 'ADMIN' },
+    { email: 'admin@uncc.edu',  password: 'Password123!', role: 'ADMIN' },
+    { email: 'alice@testing.com',  password: 'Password456^', role: 'USER'  }
   ];
 
   const users = [];
-
-  for (const userData of usersData) {
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
-
-    const user = await prisma.user.create({
-      data: {
-        email: userData.email,
-        password: hashedPassword,
-        role: userData.role || 'USER',
-      },
+  for (const u of usersData) {
+    const hashed = await bcrypt.hash(u.password, 10);
+    const created = await prisma.user.create({
+      data: { email: u.email, password: hashed, role: u.role },
     });
-
-    users.push(user);
+    users.push(created);
   }
+  const [admin, user] = users;
 
-  for (const user of users) {
-    await prisma.post.createMany({
-      data: [
-        {
-          title: `Welcome Post by ${user.email.split('@')[0]}`,
-          content: `This is the first post by ${user.email.split('@')[0]}.`,
-          authorId: user.id,
-        },
-        {
-          title: `Thoughts by ${user.email.split('@')[0]}`,
-          content: `Another insightful post by ${user.email.split('@')[0]}.`,
-          authorId: user.id,
-        },
-      ],
-    });
-  }
+  // Menu items (created by admin)
+  const menuItems = await Promise.all([
+    prisma.menu.create({ data: { name: 'Espresso',     description: 'Strong shot of coffee',  price: 2.50, userId: admin.id } }),
+    prisma.menu.create({ data: { name: 'Latte',        description: 'Espresso with milk',     price: 4.00, userId: admin.id } }),
+    prisma.menu.create({ data: { name: 'Cappuccino',   description: 'Espresso with foam',     price: 3.75, userId: admin.id } }),
+  ]);
+
+  // Orders — `owner` owns the first order
+  await prisma.order.create({
+    data: { name: 'Morning espresso', authorId: user.id, menuId: menuItems[0].id },
+  });
+  await prisma.order.create({
+    data: { name: 'Afternoon latte',  authorId: user.id, menuId: menuItems[1].id },
+  });
+
+  // Reviews — `owner` owns the first review
+  await prisma.review.create({
+    data: { rating: 5, comment: 'Amazing espresso!',   authorId: user.id, menuItemId: menuItems[0].id },
+  });
+  await prisma.review.create({
+    data: { rating: 4, comment: 'Decent cappuccino.',  authorId: user.id, menuItemId: menuItems[2].id },
+  });
 
   console.log('Seed completed successfully!');
 } catch (error) {
   console.error('Seed failed:', error);
+  process.exitCode = 1;
 } finally {
   await prisma.$disconnect();
 }

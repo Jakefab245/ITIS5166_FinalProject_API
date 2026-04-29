@@ -1,4 +1,4 @@
-import {getOrderByIdHandler, getOrdersHandler, createOrderHandler, removeOrderHandler, updateOrderHandler} from '../controllers/orderController.js'; 
+import {getOrderByIdHandler, getOrdersHandler, createOrderHandler, removeOrderHandler, updateOrderHandler} from '../controller/orderController.js'; 
 import express from 'express'; 
 import {authorizeRoles} from '../middleware/authorizeRoles.js';
 

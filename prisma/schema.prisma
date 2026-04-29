@@ -1,56 +1,84 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  provider        = "prisma-client-js"
+  output          = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
+// ---------------------------------------------------------------------------
+// Models
+// ---------------------------------------------------------------------------
+
+model User {
+  id       Int      @id @default(autoincrement())
+  email    String   @unique
+  password String
+  role     Role     @default(USER)
+
+  orders  Order[]
+  reviews Review[]
+  menus   Menu[]
+
+  @@map("users")
+}
+
+model Menu {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  description String
+  price       Float
+
+  // Nullable so seed/migrate doesn't fail if you don't supply it,
+  // but still gives authorizeOwnership a column to check.
+  owner   User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId  Int?  @map("user_id")
+
+  orders  Order[]
+  reviews Review[]
+
+  @@map("menu")
+}
+
 model Order {
-  id Int @id @default(autoincrement())
-  name String
+  id        Int      @id @default(autoincrement())
+  name      String
   createdAt DateTime @default(now()) @map("created_at")
-  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  menuItemId Menu @relation(fields: [menuId], references: [id], onDelete: Cascade)
-  authorId Int @map("user_id")
+
+  author   User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId Int  @map("user_id")
+
+  menuItem Menu @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  menuId   Int  @map("menu_id")
+
   @@map("orders")
 }
 
-model User {
- id Int @id @default(autoincrement())
- email String @unique
- password String
- role Role @default(USER)
- orders Order[] 
- reviews Review[]
- @@map("users")
-}
-
 model Review {
-  id Int @id @default(autoincrement())
-  rating Int
-  comment String
+  id        Int      @id @default(autoincrement())
+  rating    Int
+  comment   String
   createdAt DateTime @default(now()) @map("created_at")
-  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId Int @map("user_id") 
-  menuItemId Int @map("menu_item_id")
+
+  author   User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId Int  @map("user_id")
+
+  menuItem   Menu @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  menuItemId Int  @map("menu_item_id")
+
   @@map("reviews")
 }
 
-model Menu{ 
-  menuId Int @id @default(autoincrement()) 
-  name String 
-  description String 
-  price Float 
-  @@map("menu")
-}
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
 
 enum Role {
   USER
   ADMIN
-} 
- 
-// Key Distinctions for Roles are provided below  
-// 1. Admin: Make changes to Menu Items (Key Distinction solely for Administrators), Make Changes to Coffee Orders
-// 2. User: Create Reviews, Orders, Sign-Up as well. 
+}
+
+// Role notes:
+//   ADMIN — manages menu items and any order/review.
+//   USER  — creates orders and reviews; manages only their own.

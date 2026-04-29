@@ -1,22 +1,22 @@
 import prisma from '../config/db.js'; 
 
 export async function getAllMenuItems(){ 
-    return await prisma.menuItem.findMany();
+    return await prisma.Menu.findMany();
 } 
 
 export async function getMenuItemById(id){ 
-    const menuItem =  await prisma.menuItem.findUnique({ where: { id } }); 
+    const menuItem =  await prisma.Menu.findUnique({ where: { id } }); 
     return menuItem;
 } 
 
 export function createMenuItem(data){ 
-    const menItem = prisma.menuItem.create({data}); 
+    const menItem = prisma.Menu.create({data}); 
     return menItem;
 } 
 
 export async function updateMenuItem(id, updatedData){ 
     try { 
-        const updatedItem = await prisma.menuItem.update({ where: { id }, updatedData });
+        const updatedItem = await prisma.Menu.update({ where: { id }, updatedData });
         return updatedItem;
     }  
     catch (error){ 
@@ -27,7 +27,7 @@ export async function updateMenuItem(id, updatedData){
 
 export async function removeMenuItem(id){ 
     try{ 
-        const deletedItem = await prisma.menuItem.delete({where: {id}}); 
+        const deletedItem = await prisma.Menu.delete({where: {id}}); 
         return deletedItem;
     } catch (error) { 
         if (error.code === 'P2025') return null; 

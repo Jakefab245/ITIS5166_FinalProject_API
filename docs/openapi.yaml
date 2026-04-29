@@ -1,156 +1,86 @@
-openapi: 3.0.3 
+openapi: 3.0.3
 
-info: 
+info:
   title: Coffee Ordering API
   version: 1.0.0
-  description: API Documentation for Coffee Ordering API
+  description: |
+    REST API for a coffee shop. Five resources:
+    auth, users, menu items, orders, and reviews.
 
-servers: 
-  - url: http://localhost:8080/api
+    ## Auth
+    Most endpoints require a JWT Bearer token. Obtain one via `POST /auth/login`,
+    then click the green **Authorize** button in Swagger UI and paste the token.
+    Public endpoints (signup, login, GET menu, GET reviews) do not require a token.
 
-tags: 
-  - name: Coffee Orders 
-    description: Operations related to coffee orders 
-  - name: Auth 
-    description: User authentication endpoints
+servers:
+  - url: http://localhost:3000/api
+    description: Local development
+  - url: Env{RENDER_URL}
+    description: Render production 
 
-paths:  
-  /orders:  
-    get: 
-      tags: 
-        - Coffee Orders
-      summary: Get all coffee orders 
-      parameters: 
-        - $ref: '#/components/parameters/search' 
-        - $ref: '#/components/parameters/sortBy' 
-        - $ref: '#/components/parameters/order'
-        - $ref: '#/components/parameters/offset'
-        - $ref: '#/components/parameters/limit'
-      description: Retrieve a list of all coffee orders
-      responses: 
-        '200':  
-          description: A list of coffee orders
-          content: 
-            application/json: 
-              schema: 
-                type: array 
-                items: 
-                  $ref: '#/components/schemas/Post'
-    post:  
-      security: 
-        - bearerAuth: []
-      tags: 
-          - Posts
-      summary: Create a new post 
-      description: Create a new blog posts.  
-      requestBody: 
-            description: The post object to create 
-            required: true 
-            content: 
-              application/json: 
-                schema: 
-                  $ref: '#/components/schemas/Post'
-      responses: 
-           '201': 
-             description: Post successfully created 
-             content: 
-              application/json: 
-                schema:  
-                  type: object
-                  $ref: '#/components/schemas/Post' 
-           '400': 
-             $ref: '#/components/responses/InvalidPostInput' 
-           '401': 
-              $ref: '#/components/responses/Unauthorized'
+# Default: every operation requires JWT.
+# Public operations opt out individually with `security: []`.
+security:
+  - bearerAuth: []
 
+tags:
+  - name: Auth
+    description: User authentication (signup, login)
+  - name: Users
+    description: User account management
+  - name: Menu
+    description: Menu item CRUD (admin-managed)
+  - name: Coffee Orders
+    description: Customer coffee orders
+  - name: Reviews
+    description: Customer reviews on menu items
 
-  /orders/{id}: 
-    get:  
-      tags: 
-        - Posts
-      summary: Get a post by ID 
-      description: Retrieve a single blog post by its ID. 
-      parameters: 
-        - $ref: '#/components/parameters/ResourceId'
-      responses: 
-        '200': 
-          description: A single blog post 
-          content: 
-            application/json: 
-              schema: 
-                $ref: '#/components/schemas/Post'
-        '404': 
-          $ref: '#/components/responses/NotFound'
+paths:
+  # ---------------------------------------------------------------------------
+  # AUTH
+  # ---------------------------------------------------------------------------
+  /auth/signup:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Register a new user (Public)
+      description: Creates a new user account. Email must be unique.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUpCredentials'
+      responses:
+        '201':
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                id: 4
+                email: newuser@example.com
+                role: USER
         '400':
-          $ref: '#/components/responses/InvalidId' 
-    put: 
-      security: 
-        - bearerAuth: [] 
-      tags: 
-        - Posts 
-      summary: Update a post by ID 
-      description: Update a single blog post by its ID. 
-      parameters: 
-        - $ref: '#/components/parameters/ResourceId' 
-      requestBody: 
-        description: Post object to update 
-        required: true 
-        content: 
-          application/json: 
-            schema: 
-              $ref: '#/components/schemas/Post' 
-      responses: 
-        '200': 
-          description: Post successfully updated 
-          content: 
-            application/json: 
-              schema: 
-                $ref: '#/components/schemas/Post' 
-        '400': 
-          $ref: '#/components/responses/InvalidPostInput' 
-        '401': 
-          $ref: '#/components/responses/Unauthenticated' 
-        '404': 
-          $ref: '#/components/responses/NotFound' 
-        '403': 
-          $ref: '#/components/responses/Unauthorized'
+          $ref: '#/components/responses/InvalidUserInput'
+        '409':
+          $ref: '#/components/responses/Conflict'
 
-    delete: 
-      security: 
-        - bearerAuth: [] 
-      tags: 
-        - Posts 
-      summary: Delete a post by ID 
-      description: Delete a sinle blog post by its ID. 
-      parameters: 
-        - $ref: '#/components/parameters/ResourceId' 
-      responses: 
-        '204': 
-          description: Post successfully deleted 
-        '400': 
-          $ref: '#/components/responses/InvalidId' 
-        '401': 
-          $ref: '#/components/responses/Unauthenticated' 
-        '403':     
-          $ref: '#/components/responses/Unauthorized'
-        '404': 
-          $ref: '#/components/responses/NotFound'
-
-
-
-  /auth/login: 
-    post:  
-      tags: 
-        - Auth
-      summary: Authenticate User 
-      description:  Authenticate a user and return an access token. 
-      requestBody: 
-        description: User login credentials 
-        required: true 
-        content: 
-          application/json: 
-            schema: 
-              $ref: '#/components/schemas/AuthCredentials' 
+  /auth/login:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Authenticate user and return JWT (Public)
+      description: |
+        Returns a JWT access token. Copy the token from the response, click
+        **Authorize** in Swagger UI, and paste it (no `Bearer ` prefix needed).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthCredentials'
       responses:
         '200':
           description: Authentication successful
@@ -159,229 +89,733 @@ paths:
               schema:
                 type: object
                 properties:
-                  token:
+                  accessToken:
                     type: string
-                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-        '400': 
+                example:
+                  accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '400':
           $ref: '#/components/responses/InvalidUserInput'
         '401':
-          description: Invalid credentials 
+          $ref: '#/components/responses/Unauthenticated'
+
+  # ---------------------------------------------------------------------------
+  # USERS
+  # ---------------------------------------------------------------------------
+  /users:
+    get:
+      tags: [Users]
+      summary: List all users (Admin only)
+      responses:
+        '200':
+          description: Array of users
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                example:  
-                  error: "Invalid credentials" 
-  /auth/signup: 
-    post: 
-      tags: 
-        - Auth  
-      summary: Register a new user 
-      description: Registering a new user account 
-      requestBody: 
-        description: User Signup Credentials 
-        required: true 
-        content:
-          application/json: 
-            schema: 
-             $ref: '#/components/schemas/SignUpCredentials' 
-      responses: 
-        '201': 
-          description: User successfully signed up 
-          content: 
-            application/json: 
-              schema: 
-                type: object 
-                properties: 
-                  message: 
-                    type: string 
-                    example: "User registered successfully" 
-        '409': 
-          description: Duplicate email 
-          content: 
-            application/json: 
-              schema: 
-                type: object 
-                properties: 
-                  error: 
-                    type: string 
-                example:  
-                  error: "Email already in use"  
-        '400': 
-          $ref: '#/components/responses/InvalidUserInput'
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 
-                
-components:  
-  schemas: 
-    Order: 
-      type: object 
-      properties: 
-        id: 
-          type: integer 
-          readOnly: true
-        title: 
-          type: string 
-          example: 'First Order'
-        content: 
-          type: string 
-          example: 'This is the content of the first post'
-        createdAt: 
-          type: string
-          readOnly: true
-          example: "2026-03-04T20:30:00Z" 
-        authorId: 
-          type: integer 
-          readOnly: true
-          example: 1 
-    AuthCredentials: 
-      type: object 
-      properties: 
-        email: 
-          type: string 
-        password: 
-          type: string 
-      example: 
-          email: 'user@example.com' 
-          password: 'password123' 
-    SignUpCredentials: 
-      type: object 
-      properties: 
-        email: 
-          type: string 
-        password: 
-         type: string 
-  parameters: 
-    search: 
-      name: search 
-      in: query 
-      required: false 
-      description: Filter Items containing this keyword 
-      schema: 
-        type: string 
-        example: "first" 
-    sortBy: 
-      name: sortBy 
-      in: query 
-      required: false 
-      description: Field to sort results by 
-      schema: 
-        type: string 
-        example: "createdAt"
-    order: 
-      name: order 
-      in: query 
-      required: false
-      description: Sort order
-      schema: 
-        type: string 
-        enum: [asc, desc] 
-        example: "asc"
-    offset: 
-      name: offset 
-      in: query 
-      required: false 
-      description: Number of items to skip 
-      schema: 
-        type: integer 
-        example: 0  
-    limit: 
-      name: limit 
-      in: query 
-      required: false 
-      description: Maximum number of items to return 
-      schema: 
-        type: integer 
-        example: 10
-    ResourceId: 
-      name: id 
-      in: path 
+  /users/{id}:
+    parameters:
+      - $ref: '#/components/parameters/ResourceId'
+    get:
+      tags: [Users]
+      summary: Get a user by ID (Self or Admin)
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Users]
+      summary: Update a user (Self or Admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserInput'
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/InvalidUserInput'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+    delete:
+      tags: [Users]
+      summary: Delete a user (Self or Admin)
+      responses:
+        '204':
+          description: User deleted
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ---------------------------------------------------------------------------
+  # MENU
+  # ---------------------------------------------------------------------------
+  /menuItems:
+    get:
+      tags: [Menu]
+      security: []
+      summary: List all menu items (Public)
+      responses:
+        '200':
+          description: Array of menu items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Menu'
+    post:
+      tags: [Menu]
+      summary: Create a menu item (Admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuInput'
+      responses:
+        '201':
+          description: Menu item created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Menu'
+        '400':
+          $ref: '#/components/responses/InvalidMenuInput'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /menuItems/{id}:
+    parameters:
+      - $ref: '#/components/parameters/ResourceId'
+    get:
+      tags: [Menu]
+      security: []
+      summary: Get a menu item by ID (Public)
+      responses:
+        '200':
+          description: Menu item found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Menu'
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Menu]
+      summary: Update a menu item (Admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuInput'
+      responses:
+        '200':
+          description: Menu item updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Menu'
+        '400':
+          $ref: '#/components/responses/InvalidMenuInput'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+    delete:
+      tags: [Menu]
+      summary: Delete a menu item (Admin only)
+      responses:
+        '204':
+          description: Menu item deleted
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ---------------------------------------------------------------------------
+  # ORDERS
+  # ---------------------------------------------------------------------------
+  /orders:
+    get:
+      tags: [Coffee Orders]
+      summary: List all coffee orders (Admin only)
+      responses:
+        '200':
+          description: Array of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags: [Coffee Orders]
+      summary: Create a coffee order (Any authenticated user)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderInput'
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/InvalidOrderInput'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+
+  /orders/{id}:
+    parameters:
+      - $ref: '#/components/parameters/ResourceId'
+    get:
+      tags: [Coffee Orders]
+      summary: Get an order by ID (Owner or Admin)
+      responses:
+        '200':
+          description: Order found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Coffee Orders]
+      summary: Update an order (Owner or Admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderInput'
+      responses:
+        '200':
+          description: Order updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/InvalidOrderInput'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Coffee Orders]
+      summary: Delete an order (Owner or Admin)
+      responses:
+        '204':
+          description: Order deleted
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ---------------------------------------------------------------------------
+  # REVIEWS
+  # ---------------------------------------------------------------------------
+  /reviews:
+    get:
+      tags: [Reviews]
+      security: []
+      summary: List all reviews (Public)
+      responses:
+        '200':
+          description: Array of reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+    post:
+      tags: [Reviews]
+      summary: Create a review (Any authenticated user)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewInput'
+      responses:
+        '201':
+          description: Review created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          $ref: '#/components/responses/InvalidReviewInput'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+
+  /reviews/{id}:
+    parameters:
+      - $ref: '#/components/parameters/ResourceId'
+    get:
+      tags: [Reviews]
+      security: []
+      summary: Get a review by ID (Public)
+      responses:
+        '200':
+          description: Review found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Reviews]
+      summary: Update a review (Owner or Admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewInput'
+      responses:
+        '200':
+          description: Review updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          $ref: '#/components/responses/InvalidReviewInput'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Reviews]
+      summary: Delete a review (Owner or Admin)
+      responses:
+        '204':
+          description: Review deleted
+        '400':
+          $ref: '#/components/responses/InvalidId'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+# =============================================================================
+# COMPONENTS
+# =============================================================================
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    ResourceId:
+      name: id
+      in: path
       required: true
-      description: Resource ID 
-      schema: 
-         type: integer 
-         example: 1 
-  responses: 
-    NotFound: 
-      description: Resource not found 
-      content: 
-        application/json: 
-          schema: 
-            type: object 
-            properties: 
-              error: 
-                type: string 
-            example:  
-              error: "Resource 1 not found"
-    InvalidId: 
-          description: Invalid ID 
-          content: 
-            application/json: 
-              schema: 
-                type: object 
-                properties: 
-                    errors: 
-                      type: array  
-                      items: 
-                        type: string 
-                      example: 
-                        errors: ["ID must be a positive integer"]
-    InvalidPostInput: 
-      description: Bad request due to invalid data 
-      content: 
-        application/json: 
-          schema: 
-            type: object 
-            properties: 
-              errors: 
-                type: array 
-                items: 
-                  type: string 
-            example: 
-              errors: 
-                - "Title must be at least 3 characters" 
-    Unauthorized: 
-      description: Client is not authorized
-      content: 
-        application/json: 
-          schema: 
-            type: object 
-            properties: 
-              error: 
-                type: string 
-            example: 
-              error: "Not Authorized. Please provide a valid token."
-    InvalidUserInput: 
-      description: Bad request due to invalid user data 
-      content: 
-        application/json: 
-          schema: 
-            type: object 
-            properties: 
-              errors: 
-                type: array 
-                items: 
-                  type: string 
-            example: 
-              errors: 
-                - "Email is required" 
-                - "Password is required" 
-    Unauthenticated: 
-      description: Client is not authenticated 
-      content: 
-        application/json: 
-          schema: 
-            type: object 
-            properties: 
-              error: 
-                type: string 
-            example: 
-              error: "Authentication required. Please provide a valid token." 
-  securitySchemes: 
-    bearerAuth: 
-      type: http 
-      scheme: bearer 
-      bearerFormat: JWT 
-    
+      description: Resource ID (positive integer)
+      schema:
+        type: integer
+        minimum: 1
+        example: 1
+
+  schemas:
+    # ---- User & Auth ----
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 2
+        email:
+          type: string
+          format: email
+          example: owner@example.com
+        role:
+          type: string
+          enum: [USER, ADMIN]
+          example: USER
+
+    AuthCredentials:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: owner@example.com
+        password:
+          type: string
+          format: password
+          example: Password123!
+
+    SignUpCredentials:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: newuser@example.com
+        password:
+          type: string
+          format: password
+          minLength: 8
+          maxLength: 64
+          example: Password123!
+        role:
+          type: string
+          enum: [USER, ADMIN]
+          example: USER
+
+    UpdateUserInput:
+      type: object
+      description: At least one field must be provided.
+      properties:
+        email:
+          type: string
+          format: email
+          example: updated@example.com
+        password:
+          type: string
+          format: password
+          example: NewPassword123!
+        role:
+          type: string
+          enum: [USER, ADMIN]
+
+    # ---- Menu ----
+    Menu:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          example: Espresso
+        description:
+          type: string
+          example: Strong shot of coffee
+        price:
+          type: number
+          format: float
+          example: 2.50
+        userId:
+          type: integer
+          nullable: true
+          readOnly: true
+          example: 1
+
+    MenuInput:
+      type: object
+      required: [name, description, price]
+      properties:
+        name:
+          type: string
+          example: Mocha
+        description:
+          type: string
+          example: Espresso with chocolate
+        price:
+          type: number
+          format: float
+          minimum: 0.01
+          example: 4.50
+
+    # ---- Order ----
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        name:
+          type: string
+          example: Morning espresso
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+          example: '2026-04-28T08:30:00Z'
+        authorId:
+          type: integer
+          readOnly: true
+          example: 2
+        menuId:
+          type: integer
+          example: 1
+
+    OrderInput:
+      type: object
+      required: [name, menuId]
+      properties:
+        name:
+          type: string
+          example: Morning espresso
+        menuId:
+          type: integer
+          minimum: 1
+          example: 1
+
+    # ---- Review ----
+    Review:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          example: 1
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 5
+        comment:
+          type: string
+          example: Amazing espresso!
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+          example: '2026-04-28T08:30:00Z'
+        authorId:
+          type: integer
+          readOnly: true
+          example: 2
+        menuItemId:
+          type: integer
+          example: 1
+
+    ReviewInput:
+      type: object
+      required: [rating, comment, menuItemId]
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 5
+        comment:
+          type: string
+          example: Amazing espresso!
+        menuItemId:
+          type: integer
+          minimum: 1
+          example: 1
+
+  responses:
+    # ---- 400 family ----
+    InvalidId:
+      description: Bad request — invalid path parameter
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: string
+            example:
+              errors:
+                - id must be a positive integer
+
+    InvalidUserInput:
+      description: Bad request — invalid user data
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: string
+            example:
+              errors:
+                - A valid email is required
+                - Password must be between 8 and 64 characters
+
+    InvalidMenuInput:
+      description: Bad request — invalid menu data
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: string
+            example:
+              errors:
+                - name is required
+                - price must be a positive number
+
+    InvalidOrderInput:
+      description: Bad request — invalid order data
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: string
+            example:
+              errors:
+                - name is required
+                - menuId must be a positive integer
+
+    InvalidReviewInput:
+      description: Bad request — invalid review data
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: string
+            example:
+              errors:
+                - rating must be 1-5
+                - comment is required
+
+    # ---- 401 ----
+    Unauthenticated:
+      description: Missing or invalid JWT
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+            example:
+              error: Not authenticated. Please provide a valid token.
+
+    # ---- 403 ----
+    Forbidden:
+      description: Authenticated but not allowed
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+            example:
+              error: 'Forbidden: insufficient permission.'
+
+    # ---- 404 ----
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+            example:
+              error: Resource not found
+
+    # ---- 409 ----
+    Conflict:
+      description: Conflict (duplicate unique field)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+            example:
+              error: email admin@example.com already used

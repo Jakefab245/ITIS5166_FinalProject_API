@@ -13,7 +13,7 @@ export async function getOrderByIdHandler(req, res){
 }
 
 export async function createOrderHandler(req, res){ 
-    const data = req.body; 
+    const data = { ...req.body, authorId: req.user.id }; 
     const newOrder = await addOrder(data); 
     res.status(201).json(newOrder);
 } 

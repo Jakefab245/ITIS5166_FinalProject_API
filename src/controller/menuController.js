@@ -1,4 +1,8 @@
-import {fetchAllMenuItems, fetchMenuItemById, addMenuItem, removeMenuItemById, modifyMenuItem} from '../service/menuService.js'; 
+import {fetchAllMenuItems,  
+    fetchMenuItemById,  
+    addMenuItem,  
+    removeMenuItemById,  
+    modifyMenuItem} from '../service/menuService.js'; 
 
 
 export async function getMenuItemsHandler(req, res){ 

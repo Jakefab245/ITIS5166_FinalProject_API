@@ -1,4 +1,4 @@
-import {getReviewsHandler, getReviewByIdHandler,createReviewHandler,updateReviewHandler,removeReviewHandler} from '../controllers/menuReviewController.js'; 
+import {getReviewsHandler, getReviewByIdHandler,createReviewHandler,updateReviewHandler,removeReviewHandler} from '../controller/menuReviewController.js'; 
 import express from 'express'; 
 
 
