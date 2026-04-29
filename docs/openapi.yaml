@@ -13,12 +13,10 @@ info:
     Public endpoints (signup, login, GET menu, GET reviews) do not require a token.
 
 servers:
-  - url: /api
-    description: Current host
-  - url: https://itis5166-finalproject-api.onrender.com/api
-    description: Render production
   - url: http://localhost:3000/api
     description: Local development
+  - url: https://itis5166-finalproject-api.onrender.com
+    description: Render production
 
 # Default: every operation requires JWT.
 # Public operations opt out individually with `security: []`.
@@ -126,7 +124,7 @@ paths:
       - $ref: '#/components/parameters/ResourceId'
     get:
       tags: [Users]
-      summary: Get a user by ID (Self or Admin)
+      summary: Get a user by ID 
       responses:
         '200':
           description: User found
@@ -144,7 +142,7 @@ paths:
           $ref: '#/components/responses/NotFound'
     put:
       tags: [Users]
-      summary: Update a user (Self or Admin)
+      summary: Update a user 
       requestBody:
         required: true
         content:
@@ -170,7 +168,7 @@ paths:
           $ref: '#/components/responses/Conflict'
     delete:
       tags: [Users]
-      summary: Delete a user (Self or Admin)
+      summary: Delete a user 
       responses:
         '204':
           description: User deleted
