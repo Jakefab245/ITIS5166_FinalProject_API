@@ -2,15 +2,14 @@ import {getOrderByIdHandler, getOrdersHandler, createOrderHandler, removeOrderHa
 import express from 'express';
 import {authenticate} from '../middleware/authenticate.js';
 import {authorizeRoles} from '../middleware/authorizeRoles.js';
-import {authorizeOrderOwnership} from '../middleware/authorizeOwnership.js';
 
 const router = express.Router();
 
 router.get('/', authenticate, authorizeRoles('ADMIN'), getOrdersHandler);
-router.get('/:id', authenticate, authorizeOrderOwnership, getOrderByIdHandler);
+router.get('/:id', authenticate, authorizeRoles('ADMIN'), getOrderByIdHandler);
 router.post('/', authenticate, createOrderHandler);
-router.put('/:id', authenticate, authorizeOrderOwnership, updateOrderHandler);
-router.delete('/:id', authenticate, authorizeOrderOwnership, removeOrderHandler);
+router.put('/:id', authenticate, authorizeRoles('ADMIN'), updateOrderHandler);
+router.delete('/:id', authenticate, authorizeRoles('ADMIN'), removeOrderHandler);
 
 
 export default router;
