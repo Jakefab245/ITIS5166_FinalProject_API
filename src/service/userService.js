@@ -1,4 +1,5 @@
-import {getAllUsers, getUserById, getUserByEmail, createUser, updateUser, removeUser} from '../repo/userRepo.js'; 
+import bcrypt from 'bcrypt';
+import {getAllUsers, getUserById, getUserByEmail, createUser, updateUser, removeUser} from '../repo/userRepo.js';
 
 export async function fetchAllUsers(){ 
     return await getAllUsers();
@@ -34,14 +35,18 @@ export async function addUser(data){
         error.status = 409;
         throw error;
     }
-    else{ 
-        const newUser = await createUser(data); 
+    else{
+        const hashedPassword = await bcrypt.hash(data.password, 10);
+        const newUser = await createUser({...data, password: hashedPassword});
         return newUser;
     }
 }  
 
-export async function modifyUser(id, updatedData){ 
-    const updatedUser = await updateUser(id, updatedData); 
+export async function modifyUser(id, updatedData){
+    if(updatedData.password){
+        updatedData = {...updatedData, password: await bcrypt.hash(updatedData.password, 10)};
+    }
+    const updatedUser = await updateUser(id, updatedData);
     if(updatedUser){ 
         return updatedUser;
     } 
