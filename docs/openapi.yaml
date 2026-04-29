@@ -328,7 +328,7 @@ paths:
       - $ref: '#/components/parameters/ResourceId'
     get:
       tags: [Coffee Orders]
-      summary: Get an order by ID (Owner or Admin)
+      summary: Get an order by ID (Admin)
       responses:
         '200':
           description: Order found
@@ -346,7 +346,7 @@ paths:
           $ref: '#/components/responses/NotFound'
     put:
       tags: [Coffee Orders]
-      summary: Update an order (Owner or Admin)
+      summary: Update an order (Admin)
       requestBody:
         required: true
         content:
@@ -370,7 +370,7 @@ paths:
           $ref: '#/components/responses/NotFound'
     delete:
       tags: [Coffee Orders]
-      summary: Delete an order (Owner or Admin)
+      summary: Delete an order (Admin)
       responses:
         '204':
           description: Order deleted
@@ -441,7 +441,7 @@ paths:
           $ref: '#/components/responses/NotFound'
     put:
       tags: [Reviews]
-      summary: Update a review (Owner or Admin)
+      summary: Update a review (Admin)
       requestBody:
         required: true
         content:
