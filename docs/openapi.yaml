@@ -13,10 +13,12 @@ info:
     Public endpoints (signup, login, GET menu, GET reviews) do not require a token.
 
 servers:
-  - url: http://localhost:3000/api
-    description: Local development
+  - url: /api
+    description: Current host
   - url: https://itis5166-finalproject-api.onrender.com/api
     description: Render production
+  - url: http://localhost:3000/api
+    description: Local development
 
 # Default: every operation requires JWT.
 # Public operations opt out individually with `security: []`.
