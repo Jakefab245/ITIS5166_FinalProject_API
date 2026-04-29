@@ -1,6 +1,6 @@
 import {signUpController, logInController} from '../controller/authController.js'; 
 import express from 'express'; 
-import { validateSignUp } from '../middleware/userValidators.js';
+import { validateSignUp } from '../middleware/userValidators.js'; 
 
 const router = express.Router(); 
 
