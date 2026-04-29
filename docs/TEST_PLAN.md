@@ -58,7 +58,7 @@ Execute. Expect **200**. Copy the `accessToken` value into `ADMIN_TOKEN`.
 
 **Second run — USER credentials:**
 ```json
-{ "email": "<USER_EMAIL>", "password": "Password123!" }
+{ "email": "<USER_EMAIL>", "password": "Password456^" }
 ```
 Execute. Expect **200**. Copy the `accessToken` value into `USER_TOKEN`.
 
