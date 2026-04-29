@@ -4,8 +4,8 @@ import {createUser, getUserByEmail} from '../repo/userRepo.js';
 
 
 export async function signUp(email, password,role){ 
-    const hashedPassword = await bcrypt.hash(password, 10); 
-    const user =await findUserByEmail(email); 
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await getUserByEmail(email);
     if(user){ 
         const error= new Error(`email ${email} already used`); 
         error.status=409; 
@@ -20,8 +20,8 @@ export async function logIn(email, password){
     const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
     const error= new Error('Invalid Credentials'); 
     error.status = 401; // Unauthorized 
-    const user = await findUserByEmail(email);
-    if(!user){ 
+    const user = await getUserByEmail(email);
+    if(!user){
         throw error;
     }
 

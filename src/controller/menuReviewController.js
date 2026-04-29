@@ -11,7 +11,7 @@ export async function getReviewByIdHandler(req, res){
     res.status(200).json(review);
 } 
 export async function createReviewHandler(req, res){ 
-    const data ={... req.body, userId: req.user.id}; 
+    const data = {...req.body, authorId: req.user.id};
     const newReview = await addReview(data); 
     res.status(201).json(newReview);
 }  

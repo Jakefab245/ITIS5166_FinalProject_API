@@ -4,10 +4,15 @@ export async function getAllMenuItems(){
     return await prisma.Menu.findMany();
 } 
 
-export async function getMenuItemById(id){ 
-    const menuItem =  await prisma.Menu.findUnique({ where: { id } }); 
+export async function getMenuItemById(id){
+    const menuItem =  await prisma.Menu.findUnique({ where: { id } });
     return menuItem;
-} 
+}
+
+export async function getMenuItemByName(name){
+    const menuItem = await prisma.Menu.findUnique({ where: { name } });
+    return menuItem;
+}
 
 export function createMenuItem(data){ 
     const menItem = prisma.Menu.create({data}); 
@@ -16,7 +21,7 @@ export function createMenuItem(data){
 
 export async function updateMenuItem(id, updatedData){ 
     try { 
-        const updatedItem = await prisma.Menu.update({ where: { id }, updatedData });
+        const updatedItem = await prisma.Menu.update({ where: { id }, data: updatedData });
         return updatedItem;
     }  
     catch (error){ 

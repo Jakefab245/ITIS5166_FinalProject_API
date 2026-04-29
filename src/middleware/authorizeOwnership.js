@@ -15,8 +15,8 @@ export async function authorizeOwnership(req, res, next) {
 
 export async function authorizeOrderOwnership(req, res, next){ 
     const id = parseInt(req.params.id); 
-    const order = await fetchOrderById(id); 
-    if(order.userId !== req.user.id){ 
+    const order = await fetchOrderById(id);
+    if(order.authorId !== req.user.id){
         const error = new Error('Forbidden: insufficient permission.'); 
         error.status = 403; 
         return next(error);
@@ -26,8 +26,8 @@ export async function authorizeOrderOwnership(req, res, next){
 
 export async function authorizeReviewOwnership(req, res, next){ 
     const id = parseInt(req.params.id); 
-    const review = await fetchReviewById(id); 
-    if(review.userId !== req.user.id){ 
+    const review = await fetchReviewById(id);
+    if(review.authorId !== req.user.id){
         const error = new Error('Forbidden: insufficient permission.'); 
         error.status = 403; 
         return next(error);

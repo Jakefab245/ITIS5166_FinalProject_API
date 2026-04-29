@@ -29,9 +29,9 @@ export async function fetchUserByEmail(email){
 //Necessary to include 409 error due to handling duplicate emails 
 export async function addUser(data){ 
     const existingUser = await getUserByEmail(data.email.toLowerCase()); 
-    if(existingUser){ 
-        const error= "User with this email already exists"; 
-        error.status=409; 
+    if(existingUser){
+        const error = new Error("User with this email already exists");
+        error.status = 409;
         throw error;
     }
     else{ 

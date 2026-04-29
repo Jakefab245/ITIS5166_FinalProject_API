@@ -1,4 +1,4 @@
-import {createMenuItem, getAllMenuItems, getMenuItemById, removeMenuItem, updateMenuItem} from '../repo/menuRepo.js'; 
+import {createMenuItem, getAllMenuItems, getMenuItemById, getMenuItemByName, removeMenuItem, updateMenuItem} from '../repo/menuRepo.js';
 
 
 export async function fetchAllMenuItems(){ 
@@ -16,7 +16,7 @@ export async function fetchMenuItemById(id){
 } 
 
 export async function addMenuItem(data){ 
-    const existingItem = await getMenuItemById(data.name); 
+    const existingItem = await getMenuItemByName(data.name);
     if(existingItem){ 
         const error = new Error('Menu item with this name already exists'); 
         error.status = 409; 
