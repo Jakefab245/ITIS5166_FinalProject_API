@@ -15,7 +15,7 @@ info:
 servers:
   - url: http://localhost:3000/api
     description: Local development
-  - url: https://itis5166-finalproject-api.onrender.com
+  - url: https://itis5166-finalproject-api.onrender.com/api
     description: Render production
   
  
@@ -281,7 +281,7 @@ paths:
 
   
   # ORDERS
-  
+
   /orders:
     get:
       tags: [Coffee Orders]

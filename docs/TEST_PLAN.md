@@ -1,6 +1,6 @@
 # Swagger UI Test Plan — Coffee Ordering API
 
-**Open:** https://itis5166-finalproject-api.onrender.com/api-docs/
+**Open:** https://itis5166-finalproject-api.onrender.com/api/api-docs/
 
 For every step:
 - *Try it out* unlocks the request body / parameters for editing.
@@ -40,7 +40,7 @@ Run this step **twice**.
 ```json
 {
   "email": "user_<timestamp>@test.com",
-  "password": "Password123!",
+  "password": "Password456^",
   "role": "USER"
 }
 ```
