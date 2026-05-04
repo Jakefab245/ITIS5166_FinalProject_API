@@ -22,7 +22,7 @@ try {
   console.log('Failed to load OpenAPI specification:', error); 
   process.exit(1);
 }
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+app.use('/api/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use('/api/users', userRoutes);
 app.use('/api/menuItems', menuRoutes); 
 app.use('/api/orders', orderRoutes); 
