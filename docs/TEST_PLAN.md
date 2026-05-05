@@ -39,7 +39,7 @@ Run this step **twice**.
 **Second run — USER:**
 ```json
 {
-  "email": "user_<timestamp>@test.com",
+  "email": "user@test.com",
   "password": "Password456^",
   "role": "USER"
 }
@@ -52,13 +52,13 @@ Click **Execute**. Expect **201**. Save `USER_ID` and `USER_EMAIL`.
 
 **First run — ADMIN credentials:**
 ```json
-{ "email": "<ADMIN_EMAIL>", "password": "Password123!" }
+{ "email": "admin@uncc.edu", "password": "Password123!" }
 ```
 Execute. Expect **200**. Copy the `accessToken` value into `ADMIN_TOKEN`.
 
 **Second run — USER credentials:**
 ```json
-{ "email": "<USER_EMAIL>", "password": "Password456^" }
+{ "email": "user@test.com", "password": "Password456^" }
 ```
 Execute. Expect **200**. Copy the `accessToken` value into `USER_TOKEN`.
 
@@ -131,7 +131,7 @@ Expect **400** `At least one field must be provided`.
 Body:
 ```json
 {
-  "name": "<Insert_Item_Here>",
+  "name": "NitroShmitro",
   "description": "Strong shot of coffee",
   "price": 2.50
 }
