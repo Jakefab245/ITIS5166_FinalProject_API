@@ -102,23 +102,14 @@ Expect **200** with an array of users. Verify **no `password` field** appears in
 ```json
 { "password": "NewPassword456!" }
 ```
-Execute. Expect **200**. Confirm the response has no `password` field.
+ **200** Expected.
 
-**Verify the new password actually works** (proves it was hashed, not stored plain text):
-Go back to *POST /auth/login*, send:
+**Verify the new password actually works**
 ```json
-{ "email": "<USER_EMAIL>", "password": "NewPassword456!" }
+{ "email": "user@test.com", "password": "NewPassword456!" }
 ```
-Expect **200**. Replace `USER_TOKEN` in your scratch pad with the new token, then re-authorize.
+Expect **200**
 
-
-#### Negative — empty body
-- `id` = `<USER_ID>`
-- Body:
-```json
-{}
-```
-Expect **400** `At least one field must be provided`.
 
 ## 3. Menu
 
@@ -139,10 +130,10 @@ Body:
 Execute. Expect **201**. Save the returned `id` as `MENU_ID`.
 
 #### Negative — non-admin
-Re-authorize as `USER_TOKEN`. Repeat with a different name. Expect **403**.
+Re-authorize as `USER_TOKEN`. Repeat with a different name. Expect **403**. For each test case Re-authorize!
 
 #### Negative — duplicate name
-Re-authorize as ADMIN_TOKEN. Send the same body again. Expect **409** `Menu item with this name already exists`.
+Expect **409** 
 
 
 ### 3.3 GET /menuItems/{id} — public
@@ -150,42 +141,42 @@ Re-authorize as ADMIN_TOKEN. Send the same body again. Expect **409** `Menu item
 - `id` = `99` → **Execute** → expect **404**.
 
 ### 3.4 PUT /menuItems/{id} — admin
-Ensure you are an Admin!
-{ "name": "Espresso_<timestamp>", "description": "Updated description", "price": 3.00 }
-Execute. Expect **200**, with the new `price`.
+This endpoint will not work unless you are an admin!
+{ "name": "EspressoNicespresso", "description": "Double Shots!", "price": 3.00 }
+Expect **200**
 
 ## 4. Coffee Orders
 
 ### 4.1 POST /orders — any authenticated user
-Authorize as `USER_TOKEN`.
+Authorize as 'Either User or Admin with Token`.
 
 **Locate:** *Coffee Orders → POST /orders* → **Try it out**.
 
 Body:
 ```json
-{ "name": "Morning espresso", "menuId": <MENU_ID> }
+{ "name": "Morning espresso", "menuId": 2 }
 ```
 Execute. Expect **201**. 
 
 ### 4.2 GET /orders — admin only
-Re-authorize as `ADMIN_TOKEN`. Execute. Expect **200**, an array including the order from 4.1.
+Re-authorize as `ADMIN_TOKEN`. Execute. Expect **200**
 
 ### 4.3 GET /orders/{id} — admin only
 
 
-- `id` = `<ORDER_ID>` → **Execute** → expect **200**.
+- `id` = `1` → **Execute** → expect **200**.
 
 
 
 ### 4.4 PUT /orders/{id} — admin only
 Re-authorize as `ADMIN_TOKEN`.
-- `id` = `<ORDER_ID>`
+- `id` = `1`
 - Body:
 ```json
-{ "name": "Afternoon espresso", "menuId": <MENU_ID> }
+{ "name": "Afternoon espresso", "menuId": 2 }
 ```
-Execute. Expect **200** with the updated `name`. 
-Reutrns **404** if ID not found
+Execute. Expect **200**  
+**404** if not found
 
 
 ## 5. Reviews
@@ -197,22 +188,13 @@ Reutrns **404** if ID not found
 
 Body:
 ```json
-{ "rating": 5, "comment": "This coffee was amazing", "menuItemId": <MENU_ID> }
+{ "rating": 5, "comment": "This coffee was amazing", "menuItemId": 2 }
 ```
-Execute. Expect **201**. Save the returned `id` as `REVIEW_ID`.
+Execute. Expect **201**
 
-#### Negative — invalid rating
-Body:
-```json
-{ "rating": 10, "comment": "x", "menuItemId": <MENU_ID> }
-```
-Expect **400** (if `rating` validator is in place) — otherwise the API will accept it.
-
----
 
 ### 5.2 GET /reviews — public
-Logout (optional). Execute. Expect **200**, an array including your new review.
-
+Expect **200**
 ### 5.3 GET /reviews/{id} — public
 - `id` = `<REVIEW_ID>` → **Execute** → expect **200**.
 
@@ -221,32 +203,25 @@ Logout (optional). Execute. Expect **200**, an array including your new review.
 - `id` = `<REVIEW_ID>`
 - Body:
 ```json
-{ "rating": 4, "comment": "Still good, shorter pull next time", "menuItemId": <MENU_ID> }
+{ "rating": 4, "comment": "Still good, shorter pull next time", "menuItemId": 2 }
 ```
 Execute. Expect **200**.
 
 
 ### 5.5 DELETE /reviews/{id}
-- `id` = `<REVIEW_ID>` → **Execute** → expect **204** (no body).
+- **Execute** → expect **204** (no body).
 
 
 ### 6.1 DELETE /orders/{id} — 
 
-- `id` = `<ORDER_ID>` → **Execute** → expect **204**.
+- **Execute** → expect **204**.
 
 ### 6.2 DELETE /menuItems/{id} — admin
 Same `ADMIN_TOKEN`.
-- `id` = `<MENU_ID>` → **Execute** → expect **204**.
+- `id` = `3` → **Execute** → expect **204**.
 
 ### 6.3 DELETE /users/{id}
 
-**Delete the USER (self-delete):**
+**Delete the USER (self-deletion):**
 Authorize as `USER_TOKEN`.
 - `id` = `<USER_ID>` → **Execute** → expect **204**.
-
-**Delete the ADMIN (self-delete):**
-Authorize as `ADMIN_TOKEN`.
-- `id` = `<ADMIN_ID>` → **Execute** → expect **204**.
-
-#### Confirm
-Logout. Try *POST /auth/login* with either deleted account → expect **401** `Invalid Credentials`.
